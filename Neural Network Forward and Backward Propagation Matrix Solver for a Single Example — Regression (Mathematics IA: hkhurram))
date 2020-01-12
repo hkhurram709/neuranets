@@ -1,0 +1,170 @@
+import numpy
+import numpy as np
+
+np.set_printoptions(suppress=False)
+numpy.set_printoptions(precision=10000,
+                       threshold=1000000000000000000,
+                       linewidth=1500000)
+
+np.set_printoptions(suppress=True)
+
+# TRAINING EXAMPLE 1 SIGMOID FUNCTION USED
+
+
+
+#input LAYER 0
+#the following are set manually, initially.
+
+FEATURE_VECTOR = np.array([[11200], [4], [2.5], [2180]])
+
+
+
+
+# BIASES
+#the following are set manually, initially.
+
+bias_to_layerTWO = 0.0007412303
+
+bias_to_layerONE = np.array([[0.0003656608],[0.0007430702],[0.0004790847]])
+
+
+
+
+#starting weights to layer 2:
+#the following are set manually, initially.
+
+weights_tolayerTWO = np.array([[0.0007504129],[0.0004124064],[0.0006434057]])
+
+
+
+
+#starting weights to layer 1:
+#the following are set manually, initially.
+
+weights_tolayerONE = np.array([[[0.0001579240], [0.0006046157],  [0.0001567974],  [0.0009583730]],
+                                [[0.0004432601], [0.0005850732],  [0.0007727971],  [0.0004574779]],
+                                [[0.0003028864], [0.0001044756],  [0.0009118538],  [0.0002420204]]])
+
+
+
+#This is the learning rate involving the updates to all the weights and biases in the matrices used, written as arrays in python.
+L = 0.01
+
+#---------------------
+
+#forward propagation
+print('''
+
+FORWARD PROPAGATION:
+''')
+
+
+#Layer 1 operations
+
+#weighted sums
+
+z0 = (((weights_tolayerONE[0][0])*(FEATURE_VECTOR[0])) + ((weights_tolayerONE[0][1])*((FEATURE_VECTOR[1]))) + ((weights_tolayerONE[0][2])*((FEATURE_VECTOR[2]))) + ((weights_tolayerONE[0][3])*((FEATURE_VECTOR[3]))) + bias_to_layerONE[0])
+z1 = (((weights_tolayerONE[1][0]*(FEATURE_VECTOR[0]))) + ((weights_tolayerONE[1][1])*(FEATURE_VECTOR[1])) + ((weights_tolayerONE[1][2])*((FEATURE_VECTOR[2]))) + ((weights_tolayerONE[1][3])*(FEATURE_VECTOR[3])) +  bias_to_layerONE[1])
+z2 = (((weights_tolayerONE[2][0])*(FEATURE_VECTOR[0])) +((weights_tolayerONE[2][1])*(FEATURE_VECTOR[1])) + ((weights_tolayerONE[2][2])*((FEATURE_VECTOR[2]))) + ((weights_tolayerONE[2][3])*(FEATURE_VECTOR[3])) +  bias_to_layerONE[2])
+
+e = 2.7182818284590452353602874713527
+neurons_LAYER_one = np.array([[   ((1)/((1) + (e)**(-(z0))))  ] , [ ((1)/(1 + (e)**(-(z1))))  ] , [ ((1)/(1 + (e)**(-(z2)))) ]])
+
+neurons_LAYER_two = np.array([ ((weights_tolayerTWO[0])*(neurons_LAYER_one[0]))  +  ((weights_tolayerTWO[1])*(neurons_LAYER_one[1])) + ((weights_tolayerTWO[2])*(neurons_LAYER_one[2])) + bias_to_layerTWO  ])
+
+#neural network's output
+output = neurons_LAYER_two[0]
+
+print(f'Neural nets output is = ${output}')
+
+#Real house price based on data
+
+target = 480500
+
+#cost function value
+
+print(f'The cost value is = {(1/2)*((output - target)**2)}')
+
+#--------------------
+
+print('''
+
+BACKPROPAGATION:
+
+
+''')
+
+# BACKPROPAGATION
+
+#BACKPROP WITH WEIGHTS TO LAYER (2)
+
+
+# ∂C/(∂w^((2)) ) = derivative index two
+
+DERIVATIVE_INDEX_TWO = np.array([[(output-target)*(neurons_LAYER_one[0])],
+                                 [(output-target)*(neurons_LAYER_one[1])],
+                                 [(output-target)*(neurons_LAYER_one[2])]])
+
+DERIVATIVE_INDEX_TWO_TRANSPOSE = DERIVATIVE_INDEX_TWO.transpose()
+
+#print(f'Derivatives of  cost function with respect to 3 weights to layer 2: {DERIVATIVE_INDEX_TWO_TRANSPOSE}')
+
+UPDATEDWEIGHTS_TOLAYER2 = np.array([((weights_tolayerTWO[0])-(L*(DERIVATIVE_INDEX_TWO[0]))), ((weights_tolayerTWO[1])-(L*(DERIVATIVE_INDEX_TWO[1]))), ((weights_tolayerTWO[2])-(L*(DERIVATIVE_INDEX_TWO[2])))])
+
+print(f'updated weights to layer (2) are: {UPDATEDWEIGHTS_TOLAYER2}')
+
+
+#BACKPROP WITH BIASES TO LAYER (2)
+
+
+
+DERIVATIVE_BIAS_INDEX2 = (output - target)
+
+UPDATEDBIAS_TOLAYER2 = ((bias_to_layerTWO)-(L*(DERIVATIVE_BIAS_INDEX2)))
+
+print("""
+
+""")
+print(f'updated BIAS to layer (2) IS: {UPDATEDBIAS_TOLAYER2}')
+
+
+#BACKPROP WITH WEIGHTS TO LAYER (1)
+
+# ∂C/(∂w^((1)) ) = derivative index one
+
+D1 = ((output - target)*(weights_tolayerTWO[0])*( (e**(-(z0)))  / (((1) + ((e**(-(z0)))))**2))*(FEATURE_VECTOR[0]))
+D2 = ((output - target)*(weights_tolayerTWO[0])*( (e**(-(z0)))  / (((1) + ((e**(-(z0)))))**2))*(FEATURE_VECTOR[1]))
+D3 = ((output - target)*(weights_tolayerTWO[0])*((e**(-(z0)))  / (((1) + ((e**(-(z0)))))**2) )*(FEATURE_VECTOR[2]))
+D4 = ((output - target)*(weights_tolayerTWO[0])*( (e**(-(z0)))  / (((1) + ((e**(-(z0)))))**2) )*(FEATURE_VECTOR[3]))
+D5 = ((output - target)*(weights_tolayerTWO[1])*( (e**(-(z1)))  / (((1) + ((e**(-(z1)))))**2))*(FEATURE_VECTOR[0]))
+D6 = ((output - target)*(weights_tolayerTWO[1])*( (e**(-(z1)))  / (((1) + ((e**(-(z1)))))**2) )*(FEATURE_VECTOR[1]))
+D7 = ((output - target)*(weights_tolayerTWO[1])*( (e**(-(z1)))  / (((1) + ((e**(-(z1)))))**2) )*(FEATURE_VECTOR[2]))
+D8 = ((output - target)*(weights_tolayerTWO[1])*( (e**(-(z1)))  / (((1) + ((e**(-(z1)))))**2) )*(FEATURE_VECTOR[3]))
+D9 = ((output - target)*(weights_tolayerTWO[2])*( (e**(-(z2)))  / (((1) + ((e**(-(z2)))))**2) )*(FEATURE_VECTOR[0]))
+D10 = ((output - target)*(weights_tolayerTWO[2])*( (e**(-(z2)))  / (((1) + ((e**(-(z2)))))**2) )*(FEATURE_VECTOR[1]))
+D11 = ((output - target)*(weights_tolayerTWO[2])*( (e**(-(z2)))  / (((1) + ((e**(-(z2)))))**2) )*(FEATURE_VECTOR[2]))
+D12 = ((output - target)*(weights_tolayerTWO[2])*( (e**(-(z2)))  / (((1) + ((e**(-(z2)))))**2) )*(FEATURE_VECTOR[3]))
+
+print('   ')
+
+UPDATEDWEIGHTS_TOLAYER1 = np.array([[(weights_tolayerONE[0][0]) - (L*D1), (weights_tolayerONE[0][1]) - (L*D2), (weights_tolayerONE[0][2]) - (L*D3), (weights_tolayerONE[0][3]) - (L*D4)],
+                                [(weights_tolayerONE[1][0]) - (L*D5), (weights_tolayerONE[1][1]) - (L*D6), (weights_tolayerONE[1][2]) - (L*D7),  (weights_tolayerONE[1][3]) - (L*D8)],
+                            [ (weights_tolayerONE[2][0]) - (L*D9),  (weights_tolayerONE[2][1]) - (L*D10),  (weights_tolayerONE[2][2]) - (L*D11), (weights_tolayerONE[2][3]) - (L*D12)]])
+
+print(f'updated weights to layer 1 are: {UPDATEDWEIGHTS_TOLAYER1}')
+
+#BACKPROP WITH BIASES TO LAYER (1)
+
+e = 2.7182818284590452353602874713527
+
+DERIVATIVE_BIAS_INDEX1 = np.array( [[(output - target)*(weights_tolayerTWO[0])*( (e**(-(z0)))/(((1) + ((e**(-(z0)))))**2) ) ]  ,
+                                   [ (output - target)*(weights_tolayerTWO[1])*( (e**(-(z1)))/(((1) + ((e**(-(z1)))))**2) )  ],
+                                   [(output - target)*(weights_tolayerTWO[2])*( (e**(-(z2)))/(((1) + ((e**(-(z2)))))**2))]] )
+
+UPDATEDBIAS_TOLAYER1 = np.array( [ [ (bias_to_layerONE[0]) - (L*DERIVATIVE_BIAS_INDEX1[0]) ]  ,
+                                   [  (bias_to_layerONE[1]) - (L*DERIVATIVE_BIAS_INDEX1[1]) ]   ,
+                                   [ (bias_to_layerONE[2]) - (L*DERIVATIVE_BIAS_INDEX1[2]) ]   ]  )
+
+print(' ')
+print(' ')
+print(f'updated BIASES to layer 1 are: {UPDATEDBIAS_TOLAYER1}')
